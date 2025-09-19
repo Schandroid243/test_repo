@@ -20,6 +20,7 @@ if (fs.existsSync(REPO_DIR)) {
 fs.mkdirSync(REPO_DIR);
 process.chdir(REPO_DIR);
 runCommand("git init");
+runCommand("git branch -m main");
 fs.writeFileSync("README.md", "# Test Repo\n");
 runCommand("git add README.md");
 runCommand('git commit -m "Initial commit"');
@@ -30,8 +31,10 @@ for (let i = totalDays; i >= 0; i--) {
   date.setDate(now.getDate() - i);
   const formattedDate = formatDate(date);
   for (let j = 0; j < commitsPerDay; j++) {
-    fs.appendFileSync("README.md", `Commit on ${formattedDate} - ${j + 1}\n`);
-    runCommand("git add README.md");
+    fs.writeFileSync("log.txt", `Commit for ${formattedDate} - ${j + 1}\n`, {
+      flag: "a",
+    });
+    runCommand("git add log.txt"); // Ajoute log.txt au lieu de README.md
     const env = {
       ...process.env,
       GIT_AUTHOR_DATE: `${formattedDate}T12:00:00`,
@@ -39,7 +42,7 @@ for (let i = totalDays; i >= 0; i--) {
     };
     execSync(`git commit -m "Commit on ${formattedDate} - ${j + 1}"`, {
       cwd: REPO_DIR,
-      env: { ...process.env, ...env },
+      env,
       stdio: "inherit",
     });
   }
