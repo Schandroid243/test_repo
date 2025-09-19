@@ -2,7 +2,8 @@ const { execSync } = require("child_process");
 const fs = require("fs");
 const path = require("path");
 
-const REPO_DIR = path.join(__dirname, "test_repo");
+// Chemin vers le dossier du repo cloné
+const REPO_DIR = "/Users/schadrack/Documents/Projects/focus/test_repo";
 const totalDays = 365;
 const commitsPerDay = 5;
 
@@ -14,16 +15,8 @@ function formatDate(date) {
   return date.toISOString().split("T")[0];
 }
 
-if (fs.existsSync(REPO_DIR)) {
-  fs.rmdirSync(REPO_DIR, { recursive: true });
-}
-fs.mkdirSync(REPO_DIR);
+// Se placer dans le dossier du repo existant
 process.chdir(REPO_DIR);
-runCommand("git init");
-runCommand("git branch -m main");
-fs.writeFileSync("README.md", "# Test Repo\n");
-runCommand("git add README.md");
-runCommand('git commit -m "Initial commit"');
 
 const now = new Date();
 for (let i = totalDays; i >= 0; i--) {
@@ -34,7 +27,7 @@ for (let i = totalDays; i >= 0; i--) {
     fs.writeFileSync("log.txt", `Commit for ${formattedDate} - ${j + 1}\n`, {
       flag: "a",
     });
-    runCommand("git add log.txt"); // Ajoute log.txt au lieu de README.md
+    runCommand("git add log.txt");
     const env = {
       ...process.env,
       GIT_AUTHOR_DATE: `${formattedDate}T12:00:00`,
